@@ -38,7 +38,7 @@ public class DruidConfig {
         initParams.put("loginUsername", "admin");
         initParams.put("loginPassword", "123456");
         initParams.put("allow", "");
-        initParams.put("deny", "192.168.2.15");
+        initParams.put("deny", "192.168.2.13");
         bean.setInitParameters(initParams);
         return bean;
     }
@@ -53,8 +53,10 @@ public class DruidConfig {
         bean.setFilter(new WebStatFilter());
 
         Map<String, String> initParams = new HashMap<>();
-        initParams.put("exclusions", "*.js,*.css,/druid/*");
+        //  排除静态资源和druid的请求
+        initParams.put("exclusions", "*.js,*.css,../druid/*");
         bean.setInitParameters(initParams);
+        //  拦截所有请求
         bean.setUrlPatterns(Arrays.asList("/*"));
         return bean;
     }
