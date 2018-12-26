@@ -33,6 +33,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: validate
+#      security安全认证部分
   security:
     user:
       name: admin
@@ -40,3 +41,6 @@ spring:
 #   在开发模式下启用dev模式
   profiles:
     active: dev
+#   thymeleaf
+  thymeleaf:
+    mode: HTML

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Druid数据库连接池配置类
  * @author lwj
  */
 @Configuration
