@@ -1,6 +1,10 @@
 # 设置端口号
 server:
   port: 8086
+#  禁用默认生成错误页面
+  error:
+    whitelabel:
+      enabled: false
 
 spring:
   datasource:
