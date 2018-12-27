@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
+ * 用户实体对象
  * @author lwj
  */
 @Entity
