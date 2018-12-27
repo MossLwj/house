@@ -48,3 +48,7 @@ spring:
 #   thymeleaf
   thymeleaf:
     mode: HTML
+#    静态资源变动，不再热加载
+  devtools:
+    restart:
+      exclude: templates/**,static/**

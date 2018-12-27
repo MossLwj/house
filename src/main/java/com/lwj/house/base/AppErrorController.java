@@ -44,10 +44,13 @@ public class AppErrorController implements ErrorController {
         int status = response.getStatus();
         switch (status) {
             case 403:
+                //  权限限制提示页面
                 return "403";
             case 404:
+                //  Not Found提示页面
                 return "404";
             case 500:
+                //  服务异常提示页面
                 return "500";
                 default:
                     return "index";
