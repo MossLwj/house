@@ -38,10 +38,10 @@ spring:
     hibernate:
       ddl-auto: validate
 #      security安全认证部分
-  security:
-    user:
-      name: admin
-      password: 123456
+#  security:
+#    user:
+#      name: admin
+#      password: 123456
 #   在开发模式下启用dev模式
   profiles:
     active: dev
