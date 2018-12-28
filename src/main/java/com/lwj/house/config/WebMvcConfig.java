@@ -25,8 +25,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     public WebMvcConfigurer webMvcConfigurer() {
-
-
         WebMvcConfigurer webMvcConfigurer = new WebMvcConfigurer() {
             @Override
             public void addViewControllers(ViewControllerRegistry registry) {

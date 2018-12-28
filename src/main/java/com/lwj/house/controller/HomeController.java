@@ -1,11 +1,8 @@
 package com.lwj.house.controller;
 
-import com.lwj.house.base.ApiResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -16,13 +13,26 @@ public class HomeController {
 
     @GetMapping("/")
     public String index(Model model) {
-        model.addAttribute("name", "BBBB");
         return "index";
     }
 
-    @GetMapping("/get")
-    @ResponseBody
-    public ApiResponse get(){
-        return ApiResponse.ofMessage(200, "成功了");
+    @GetMapping("/404")
+    public String notFoundPage(Model model) {
+        return "404";
+    }
+
+    @GetMapping("/403")
+    public String accessError(Model model) {
+        return "403";
+    }
+
+    @GetMapping("/500")
+    public String internalError(Model model) {
+        return "500";
+    }
+
+    @GetMapping("/logout")
+    public String logoutPage(Model model) {
+        return "logout";
     }
 }
