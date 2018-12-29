@@ -29,6 +29,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * 注入自定义认证
+     * @return
+     */
     @Bean
     public AuthProvider authProvider() {
         return new AuthProvider();
@@ -45,10 +49,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 // 管理员登录入口
                 .antMatchers("/admin/login").permitAll()
-                // 静态资源
-                .antMatchers("/static/**").permitAll()
                 // 用户登录入口
                 .antMatchers("/user/login").permitAll()
+                // 静态资源
+                .antMatchers("/static/**").permitAll()
+
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user/**").hasAnyRole("ADMIN", "USER")
                 .antMatchers("/api/user/**").hasAnyRole("ADMIN", "USER")
@@ -72,10 +77,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().sameOrigin();
     }
 
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    /**
+     * 自定义认证策略
+     * @param auth
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
 //        auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
-//    }
+        auth.authenticationProvider(authProvider()).eraseCredentials(true);
+    }
 
 
 }
