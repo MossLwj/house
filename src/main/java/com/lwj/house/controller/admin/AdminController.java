@@ -16,7 +16,7 @@ public class AdminController {
         return "admin/center";
     }
 
-    @GetMapping("/welcome")
+    @GetMapping("/welcome.html")
     public String welcomePage() {
         return "admin/welcome";
     }
@@ -24,5 +24,10 @@ public class AdminController {
     @GetMapping("/login")
     public String adminLoginPage() {
         return "admin/login";
+    }
+
+    @GetMapping("/add/house")
+    public String add(){
+        return "admin/house-add";
     }
 }
