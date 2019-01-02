@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` INT(11) NOT NULL auto_increment PRIMARY KEY ,
   `name` VARCHAR(32) NOT NULL UNIQUE ,
-  `password` VARCHAR(32) NOT NULL ,
+  `password` VARCHAR(60) NOT NULL ,
   `email` VARCHAR(32) NOT NULL UNIQUE ,
   `phone_number` VARCHAR(15) NOT NULL UNIQUE ,
   `status` INT(2) NOT NULL ,
