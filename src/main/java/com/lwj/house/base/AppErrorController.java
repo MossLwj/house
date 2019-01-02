@@ -68,9 +68,9 @@ public class AppErrorController implements ErrorController {
         WebRequest webRequest = new ServletWebRequest(request);
 
         Map<String, Object> attr = this.errorAttributes.getErrorAttributes(webRequest, false);
-        int status = getStatus(request);
+        int statusCode = getStatusCode(request);
 
-        return ApiResponse.ofMessage(status, String.valueOf(attr.getOrDefault("message", "error")));
+        return ApiResponse.ofMessage(statusCode, String.valueOf(attr.getOrDefault("message", "error")));
     }
 
     /**
@@ -78,7 +78,7 @@ public class AppErrorController implements ErrorController {
      * @param request
      * @return
      */
-    private int getStatus(HttpServletRequest request) {
+    private int getStatusCode(HttpServletRequest request) {
         Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
         if (statusCode != null) {
             return statusCode;

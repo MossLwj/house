@@ -31,7 +31,7 @@ public class AuthProvider implements AuthenticationProvider {
             throw new AuthenticationCredentialsNotFoundException("authError");
         }
 
-        if (this.passwordEncoder.matches(inputPassword,user.getPassword())) {
+        if (this.passwordEncoder.matches(inputPassword, user.getPassword())) {
             return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         }
         throw new BadCredentialsException("authError");
