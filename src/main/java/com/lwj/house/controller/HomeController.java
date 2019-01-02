@@ -31,8 +31,9 @@ public class HomeController {
         return "500";
     }
 
-    @GetMapping("/logout")
-    public String logoutPage() {
-        return "logout";
-    }
+//    由于在WebMvcConfig中已经配置了这里不需要再配置
+//    @GetMapping("/logout/page")
+//    public String logoutPage() {
+//        return "logout";
+//    }
 }

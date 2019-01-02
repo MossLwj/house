@@ -1,6 +1,7 @@
 package com.lwj.house.config;
 
 import com.lwj.house.security.AuthProvider;
+import com.lwj.house.security.LoginUrlEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,6 +39,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new AuthProvider();
     }
 
+
+    public LoginUrlEntryPoint urlEntryPoint(){
+        return new LoginUrlEntryPoint("/user/login");
+    }
+
     /**
      * Http权限控制
      * @param http
@@ -70,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .and()
                 .exceptionHandling()
-//                .authenticationEntryPoint(urlEntryPoint())
+                .authenticationEntryPoint(urlEntryPoint())
                 .accessDeniedPage("/403");
 
         http.csrf().disable();
