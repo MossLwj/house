@@ -1,6 +1,7 @@
 package com.lwj.house.config;
 
 import com.lwj.house.security.AuthProvider;
+import com.lwj.house.security.LoginAuthFailHandler;
 import com.lwj.house.security.LoginUrlEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,8 +41,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+    /**
+     * 注入登录路径区分，默认为普通登录入口
+     * @return
+     */
+    @Bean
     public LoginUrlEntryPoint urlEntryPoint(){
         return new LoginUrlEntryPoint("/user/login");
+    }
+
+    /**
+     * 注入认证失败处理器
+     * @return
+     */
+    @Bean
+    public LoginAuthFailHandler authFailHandler(){
+        return new LoginAuthFailHandler(urlEntryPoint());
     }
 
     /**
@@ -67,7 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 // 配置角色登录处理入口
                 .loginProcessingUrl("/login")
-//                .failureHandler(authFailHandler())
+                .failureHandler(authFailHandler())
                 .and()
                 .logout()
                 .logoutUrl("/logout")
