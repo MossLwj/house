@@ -1,5 +1,6 @@
 package com.lwj.house.config;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +45,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return webMvcConfigurer;
     }
 
+    /**
+     * Bean Util
+     * @return
+     */
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
+
 //    @Autowired
 //    private UserSecurityInterceptor securityInterceptor;
 //
@@ -60,5 +70,4 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //        // 拦截配置
 //        addInterceptor.addPathPatterns("/**");
 //    }
-
 }
