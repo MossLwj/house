@@ -1,9 +1,16 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://:3306/xunwu
+    url: jdbc:mysql:///xunwu
     username: root
     password:
     type: com.alibaba.druid.pool.DruidDataSource
   thymeleaf:
     cache: false
+  #    multipart config
+  servlet:
+    multipart:
+      enabled: true
+      location: E:\workSpace\house\tmp
+      file-size-threshold: 5MB
+      max-file-size: 20MB
