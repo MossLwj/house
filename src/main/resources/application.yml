@@ -52,3 +52,11 @@ spring:
   devtools:
     restart:
       exclude: templates/**,static/**
+#   qiniu
+qiniu:
+  AccessKey:
+  SecretKey:
+  Bucket: lwj-space
+  path: http://xxx.bkt.clouddn.com
+#  cdn:
+#    prefix:

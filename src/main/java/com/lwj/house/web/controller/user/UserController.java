@@ -1,4 +1,4 @@
-package com.lwj.house.controller.user;
+package com.lwj.house.web.controller.user;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
