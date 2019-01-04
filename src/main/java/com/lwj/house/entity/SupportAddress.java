@@ -1,4 +1,4 @@
-package com.lwj.house.web.dto;
+package com.lwj.house.entity;
 
 import lombok.Getter;
 import lombok.Setter;
