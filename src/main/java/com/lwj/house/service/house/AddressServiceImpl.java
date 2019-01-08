@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lwj
@@ -80,6 +82,16 @@ public class AddressServiceImpl implements IAddressService {
         }
 
         stations.forEach(station -> result.add(modelMapper.map(station, SubwayStationDTO.class)));
+        return result;
+    }
+
+    @Override
+    public Map<SupportAddress.Level, SupportAddressDTO> findCityAndRegion(String cityEnName, String regionEnName) {
+        Map<SupportAddress.Level, SupportAddressDTO> result = new HashMap<>();
+        SupportAddress city = supportAddressRepository.findByEnNameAndLevel(cityEnName, SupportAddress.Level.CITY.getValue());
+        SupportAddress region = supportAddressRepository.findByEnNameAndLevel(regionEnName, SupportAddress.Level.REGION.getValue());
+        result.put(SupportAddress.Level.CITY, modelMapper.map(city, SupportAddressDTO.class));
+        result.put(SupportAddress.Level.REGION, modelMapper.map(region, SupportAddressDTO.class));
         return result;
     }
 }

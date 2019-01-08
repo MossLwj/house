@@ -4,7 +4,6 @@ import com.lwj.house.entity.Role;
 import com.lwj.house.entity.User;
 import com.lwj.house.repository.RoleRepository;
 import com.lwj.house.repository.UserRepository;
-import com.lwj.house.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;

@@ -12,10 +12,19 @@ import lombok.Setter;
 @Setter
 public class ServiceResult<T> {
 
+    /**
+     * 是否成功
+     */
     private boolean success;
 
+    /**
+     * 消息
+     */
     private String message;
 
+    /**
+     * 返回对象
+     */
     private T result;
 
     public ServiceResult(boolean success) {

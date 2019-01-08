@@ -46,6 +46,12 @@ public class User implements UserDetails {
 
     private String avatar;
 
+    /**
+     * 性别（0-未知，1-男，2-女）
+     */
+    @Transient
+    private Integer gender;
+
     @Transient
     private List<GrantedAuthority> authorityList;
 

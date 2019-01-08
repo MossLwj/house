@@ -1,7 +1,7 @@
 package com.lwj.house.security;
 
 import com.lwj.house.entity.User;
-import com.lwj.house.service.IUserService;
+import com.lwj.house.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationProvider;

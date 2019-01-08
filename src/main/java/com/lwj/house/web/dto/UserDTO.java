@@ -1,8 +1,20 @@
 package com.lwj.house.web.dto;
 
+import com.lwj.house.entity.User;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.modelmapper.AbstractConverter;
+import org.modelmapper.Converter;
+import org.modelmapper.PropertyMap;
+
 /**
- * Created by 瓦力.
+ * 用户DTO对象
+ * @author lwj
  */
+@Getter
+@Setter
+@ToString
 public class UserDTO {
     private Integer id;
     private String name;
@@ -10,43 +22,22 @@ public class UserDTO {
     private String phoneNumber;
     private String lastLoginTime;
 
-    public Integer getId() {
-        return id;
-    }
+    private String gender;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
-    public String getName() {
-        return name;
-    }
+    private static String[] genders = {"未知", "男", "女"};
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public static PropertyMap<User, UserDTO> userToUserDtoMap = new PropertyMap<User, UserDTO>() {
+        @Override
+        protected void configure() {
+            using(toGender).map(source.getGender(), destination.gender);
+        }
+    };
 
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getLastLoginTime() {
-        return lastLoginTime;
-    }
-
-    public void setLastLoginTime(String lastLoginTime) {
-        this.lastLoginTime = lastLoginTime;
-    }
+    public static Converter<Integer,String> toGender = new AbstractConverter<Integer, String>() {
+        @Override
+        protected String convert(Integer genderId) {
+            return genders[genderId];
+        }
+    };
 }

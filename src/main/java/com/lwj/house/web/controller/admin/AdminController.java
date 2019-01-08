@@ -2,18 +2,29 @@ package com.lwj.house.web.controller.admin;
 
 import com.google.gson.Gson;
 import com.lwj.house.base.ApiResponse;
+import com.lwj.house.entity.SupportAddress;
+import com.lwj.house.service.ServiceResult;
+import com.lwj.house.service.house.IAddressService;
+import com.lwj.house.service.house.IHouseService;
 import com.lwj.house.service.house.IQiNiuService;
+import com.lwj.house.web.dto.HouseDTO;
 import com.lwj.house.web.dto.QiNiuPutRet;
+import com.lwj.house.web.dto.SupportAddressDTO;
+import com.lwj.house.web.form.HouseForm;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * @author lwj
@@ -24,6 +35,12 @@ public class AdminController {
 
     @Autowired
     private IQiNiuService qiNiuService;
+
+    @Autowired
+    private IAddressService addressService;
+
+    @Autowired
+    private IHouseService houseService;
 
     @Autowired
     private Gson gson;
@@ -88,6 +105,37 @@ public class AdminController {
 //            return ApiResponse.ofStatus(ApiResponse.Status.INTERNAL_SERVER_ERROR);
 //        }
 //        return ApiResponse.ofSuccess(null);
+    }
+
+
+    /**
+     * 新增房源接口
+     * @param houseForm
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("admin/add/house")
+    @ResponseBody
+    public ApiResponse addHouse(@Valid @ModelAttribute("form-house-add") HouseForm houseForm, BindingResult bindingResult) {
+        //  如果参数校验出错，则返回错误结构对象
+        if (bindingResult.hasErrors()) {
+            return new ApiResponse(HttpStatus.BAD_REQUEST.value(), bindingResult.getAllErrors().get(0).getDefaultMessage(), null);
+        }
+        //  校验是否有上传图片，和封面
+        if (houseForm.getPhotos() == null || houseForm.getCover() == null) {
+            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), "必须上传图片");
+        }
+        //  校验城市是否正确
+        Map<SupportAddress.Level, SupportAddressDTO> addressDTOMap = addressService.findCityAndRegion(houseForm.getCityEnName(), houseForm.getRegionEnName());
+        if (addressDTOMap.keySet().size() != 2) {
+            return ApiResponse.ofStatus(ApiResponse.Status.NOT_VALID_PARAM);
+        }
+        //  保存
+        ServiceResult<HouseDTO> result = houseService.save(houseForm);
+        if (result.isSuccess()) {
+            return ApiResponse.ofSuccess(result.getResult());
+        }
+        return ApiResponse.ofSuccess(ApiResponse.Status.NOT_VALID_PARAM);
     }
 
 }

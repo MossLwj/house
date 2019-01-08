@@ -1,4 +1,4 @@
-package com.lwj.house.service;
+package com.lwj.house.service.user;
 
 import com.lwj.house.entity.User;
 
