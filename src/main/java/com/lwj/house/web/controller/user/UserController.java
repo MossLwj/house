@@ -8,15 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author Administrator
  */
 @Controller
-@RequestMapping("/user")
 public class UserController {
 
-    @GetMapping("/login")
+    @GetMapping("user/login")
     public String adminLoginPage() {
         return "user/login";
     }
 
-    @GetMapping("/center")
+    @GetMapping("user/center")
     public String userCenterPage() {
         return "user/center";
     }

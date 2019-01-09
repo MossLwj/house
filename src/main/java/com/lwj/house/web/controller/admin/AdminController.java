@@ -1,8 +1,10 @@
 package com.lwj.house.web.controller.admin;
 
 import com.google.gson.Gson;
+import com.lwj.house.base.ApiDatatableResponse;
 import com.lwj.house.base.ApiResponse;
 import com.lwj.house.entity.SupportAddress;
+import com.lwj.house.service.ServiceMultiResult;
 import com.lwj.house.service.ServiceResult;
 import com.lwj.house.service.house.IAddressService;
 import com.lwj.house.service.house.IHouseService;
@@ -10,6 +12,7 @@ import com.lwj.house.service.house.IQiNiuService;
 import com.lwj.house.web.dto.HouseDTO;
 import com.lwj.house.web.dto.QiNiuPutRet;
 import com.lwj.house.web.dto.SupportAddressDTO;
+import com.lwj.house.web.form.DatatableSearch;
 import com.lwj.house.web.form.HouseForm;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
@@ -30,7 +33,6 @@ import java.util.Map;
  * @author lwj
  */
 @Controller
-@RequestMapping("/admin")
 public class AdminController {
 
     @Autowired
@@ -45,27 +47,27 @@ public class AdminController {
     @Autowired
     private Gson gson;
 
-    @GetMapping("/center")
+    @GetMapping("admin/center")
     public String adminCenterPage() {
         return "admin/center";
     }
 
-    @GetMapping("/welcome.html")
-    public String welcomePage() {
-        return "admin/welcome";
-    }
+//    @GetMapping("admin/welcome.html")
+//    public String welcomePage() {
+//        return "admin/welcome";
+//    }
 
-    @GetMapping("/login")
+    @GetMapping("admin/login")
     public String adminLoginPage() {
         return "admin/login";
     }
 
-    @GetMapping("/add/house")
+    @GetMapping("admin/add/house")
     public String add(){
         return "admin/house-add";
     }
 
-    @PostMapping(value = "/upload/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "admin/upload/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public ApiResponse uploadPhoto(@RequestParam("file") MultipartFile file) {
         if (file == null) {
@@ -107,6 +109,31 @@ public class AdminController {
 //        return ApiResponse.ofSuccess(null);
     }
 
+    /**
+     * 打开房源管理列表页面
+     * @return
+     */
+    @GetMapping("admin/house/list")
+    public String loadHousePage() {
+        return "admin/house-list";
+    }
+
+    /**
+     * 管理员角色房源查询接口
+     * @param datatableSearch
+     * @return
+     */
+    @RequestMapping("admin/houses")
+    @ResponseBody
+    public ApiDatatableResponse houses(@ModelAttribute DatatableSearch datatableSearch) {
+        ServiceMultiResult<HouseDTO> result = houseService.adminQuery(datatableSearch);
+        ApiDatatableResponse response = new ApiDatatableResponse(ApiResponse.Status.SUCCESS);
+        response.setData(result.getResult());
+        response.setRecordsFiltered(result.getTotal());
+        response.setRecordsTotal(result.getTotal());
+        response.setDraw(datatableSearch.getDraw());
+        return response;
+    }
 
     /**
      * 新增房源接口

@@ -3,16 +3,27 @@ package com.lwj.house.service.house;
 import com.lwj.house.base.LoginUserUtil;
 import com.lwj.house.entity.*;
 import com.lwj.house.repository.*;
+import com.lwj.house.service.ServiceMultiResult;
 import com.lwj.house.service.ServiceResult;
 import com.lwj.house.web.dto.HouseDTO;
 import com.lwj.house.web.dto.HouseDetailDTO;
 import com.lwj.house.web.dto.HousePictureDTO;
+import com.lwj.house.web.form.DatatableSearch;
 import com.lwj.house.web.form.HouseForm;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,6 +97,28 @@ public class HouseServiceImpl implements IHouseService {
             houseDTO.setTags(tags);
         }
         return new ServiceResult<HouseDTO>(true, null, houseDTO);
+    }
+
+    @Override
+    public ServiceMultiResult<HouseDTO> adminQuery(DatatableSearch datatableSearch) {
+        List<HouseDTO> houseDTOS = new ArrayList<>();
+
+        Sort sort = new Sort(Sort.Direction.fromString(datatableSearch.getDirection()), datatableSearch.getOrderBy());
+        int page = datatableSearch.getStart() / datatableSearch.getLength();
+        Pageable pageable = PageRequest.of(page, datatableSearch.getLength(), sort);
+//
+//        Specification<House> specification = (Specification<House>) (root, criteriaQuery, criteriaBuilder) -> {
+//            Predicate predicate = criteriaBuilder.equal(root.get("adminId"), LoginUserUtil.getLoginUserId());
+//            predicate = criteriaBuilder.and(predicate, criteriaBuilder.notEqual(root.get("status")));
+//        };
+
+        Page<House> houses = houseRepository.findAll(pageable);
+        houses.forEach(house -> {
+            HouseDTO houseDTO = modelMapper.map(house, HouseDTO.class);
+            houseDTO.setCover(this.cdnPrefix + house.getCover());
+            houseDTOS.add(houseDTO);
+        });
+        return new ServiceMultiResult<>(houses.getTotalElements(), houseDTOS);
     }
 
     /**

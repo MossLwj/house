@@ -37,7 +37,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: validate
-#      security安全认证部分
+#  security安全认证部分
 #  security:
 #    user:
 #      name: admin
@@ -52,11 +52,24 @@ spring:
   devtools:
     restart:
       exclude: templates/**,static/**
+#      redis config
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    jedis:
+      pool:
+        min-idle: 1
+    timeout: 3000
+#    session会话存储类型
+  session:
+    store-type: redis
+
 #   qiniu
 qiniu:
   AccessKey:
   SecretKey:
   Bucket: lwj-space
-  path: http://xxx.bkt.clouddn.com
-#  cdn:
-#    prefix:
+  path:
+  cdn:
+    prefix:

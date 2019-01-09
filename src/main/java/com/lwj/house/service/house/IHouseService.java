@@ -1,7 +1,9 @@
 package com.lwj.house.service.house;
 
+import com.lwj.house.service.ServiceMultiResult;
 import com.lwj.house.service.ServiceResult;
 import com.lwj.house.web.dto.HouseDTO;
+import com.lwj.house.web.form.DatatableSearch;
 import com.lwj.house.web.form.HouseForm;
 
 /**
@@ -16,5 +18,13 @@ public interface IHouseService {
      * @return
      */
     ServiceResult<HouseDTO> save(HouseForm houseForm);
+
+
+    /**
+     * 管理员房源信息列表查询接口
+     * @param datatableSearch
+     * @return
+     */
+    ServiceMultiResult<HouseDTO> adminQuery(DatatableSearch datatableSearch);
 
 }
