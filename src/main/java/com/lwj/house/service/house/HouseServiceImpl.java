@@ -75,7 +75,7 @@ public class HouseServiceImpl implements IHouseService {
 
         List<HousePictureDTO> housePictureDTOS = new ArrayList<>();
         housePictures.forEach(housePicture -> housePictureDTOS.add(modelMapper.map(housePicture, HousePictureDTO.class)));
-
+        houseDTO.setPictures(housePictureDTOS);
         houseDTO.setCover(this.cdnPrefix + houseDTO.getCover());
         //      保存房屋标签信息
         List<String> tags = houseForm.getTags();
@@ -88,6 +88,12 @@ public class HouseServiceImpl implements IHouseService {
         return new ServiceResult<HouseDTO>(true, null, houseDTO);
     }
 
+    /**
+     * 整理housePicture部分的数据
+     * @param houseForm
+     * @param houseId
+     * @return
+     */
     private List<HousePicture> generatePictures(HouseForm houseForm, Integer houseId) {
         List<HousePicture> pictures = new ArrayList<>();
         if (houseForm.getPhotos() == null || houseForm.getPhotos().isEmpty()) {
@@ -106,6 +112,12 @@ public class HouseServiceImpl implements IHouseService {
         return pictures;
     }
 
+    /**
+     * 整理houseDetail部分的数据
+     * @param houseDetail
+     * @param houseForm
+     * @return
+     */
     private ServiceResult<HouseDTO> wrapperDetailInfo(HouseDetail houseDetail, HouseForm houseForm) {
         //  校验是否存在地铁线
         Subway subway = subwayRepository.findById(houseForm.getSubwayLineId()).orElse(null);
