@@ -52,10 +52,10 @@ public class AdminController {
         return "admin/center";
     }
 
-//    @GetMapping("admin/welcome.html")
-//    public String welcomePage() {
-//        return "admin/welcome";
-//    }
+    @GetMapping("admin/welcome")
+    public String welcomePage() {
+        return "admin/welcome";
+    }
 
     @GetMapping("admin/login")
     public String adminLoginPage() {
