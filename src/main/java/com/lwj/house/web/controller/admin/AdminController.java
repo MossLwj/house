@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -163,6 +164,19 @@ public class AdminController {
             return ApiResponse.ofSuccess(result.getResult());
         }
         return ApiResponse.ofSuccess(ApiResponse.Status.NOT_VALID_PARAM);
+    }
+
+    /**
+     * 房屋信息编辑页
+     *
+     * @return
+     */
+    @GetMapping("admin/house/edit")
+    public String houseEditPage(@RequestParam(value = "id") Integer id, Model model) {
+        if (id == null || id < 1) {
+            return "404";
+        }
+        return "admin/house-edit";
     }
 
 }

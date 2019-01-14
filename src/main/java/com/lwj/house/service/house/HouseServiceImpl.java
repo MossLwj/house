@@ -139,6 +139,17 @@ public class HouseServiceImpl implements IHouseService {
         return new ServiceMultiResult<>(houses.getTotalElements(), houseDTOS);
     }
 
+    @Override
+    public ServiceResult<HouseDTO> findCompleteOne(Integer id) {
+        House house = houseRepository.findById(id).orElse(null);
+        if (house == null) {
+            return ServiceResult.notFound();
+        }
+
+        HouseDetail houseDetail = houseDetailRepository.findById(house.getId()).orElse(null);
+        return null;
+    }
+
     /**
      * 整理housePicture部分的数据
      * @param houseForm
