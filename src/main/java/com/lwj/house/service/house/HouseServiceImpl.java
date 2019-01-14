@@ -1,5 +1,6 @@
 package com.lwj.house.service.house;
 
+import com.lwj.house.base.HouseStatus;
 import com.lwj.house.base.LoginUserUtil;
 import com.lwj.house.entity.*;
 import com.lwj.house.repository.*;
@@ -20,10 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -106,13 +104,33 @@ public class HouseServiceImpl implements IHouseService {
         Sort sort = new Sort(Sort.Direction.fromString(datatableSearch.getDirection()), datatableSearch.getOrderBy());
         int page = datatableSearch.getStart() / datatableSearch.getLength();
         Pageable pageable = PageRequest.of(page, datatableSearch.getLength(), sort);
-//
-//        Specification<House> specification = (Specification<House>) (root, criteriaQuery, criteriaBuilder) -> {
-//            Predicate predicate = criteriaBuilder.equal(root.get("adminId"), LoginUserUtil.getLoginUserId());
-//            predicate = criteriaBuilder.and(predicate, criteriaBuilder.notEqual(root.get("status")));
-//        };
 
-        Page<House> houses = houseRepository.findAll(pageable);
+        Specification<House> specification = (Specification<House>) (root, criteriaQuery, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.equal(root.get("adminId"), LoginUserUtil.getLoginUserId());
+            predicate = criteriaBuilder.and(predicate, criteriaBuilder.notEqual(root.get("status"), HouseStatus.DELETE.getValue()));
+            //  加入城市信息
+            if (datatableSearch.getCity() != null) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("cityEnName"), datatableSearch.getCity()));
+            }
+            //  状态
+            if (datatableSearch.getStatus() != null) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("status"), datatableSearch.getStatus()));
+            }
+            //  创建时间
+            if (datatableSearch.getCreateTimeMin() != null) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.greaterThanOrEqualTo(root.get("createTime"), datatableSearch.getCreateTimeMin()));
+            }
+            if (datatableSearch.getCreateTimeMax() != null) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.lessThanOrEqualTo(root.get("createTime"), datatableSearch.getCreateTimeMax()));
+            }
+            //  标题
+            if (datatableSearch.getTitle() != null) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("title").as(String.class), "%" + datatableSearch.getTitle() + "%"));
+            }
+            return predicate;
+        };
+
+        Page<House> houses = houseRepository.findAll(specification, pageable);
         houses.forEach(house -> {
             HouseDTO houseDTO = modelMapper.map(house, HouseDTO.class);
             houseDTO.setCover(this.cdnPrefix + house.getCover());
