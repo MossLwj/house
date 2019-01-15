@@ -1,5 +1,8 @@
 package com.lwj.house.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -7,6 +10,8 @@ import java.util.Date;
  * Created by 瓦力.
  */
 @Entity
+@Getter
+@Setter
 @Table(name = "house")
 public class House {
     @Id
@@ -64,179 +69,4 @@ public class House {
     @Column(name = "distance_to_subway")
     private int distanceToSubway;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(Integer adminId) {
-        this.adminId = adminId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public int getArea() {
-        return area;
-    }
-
-    public void setArea(int area) {
-        this.area = area;
-    }
-
-    public int getRoom() {
-        return room;
-    }
-
-    public void setRoom(int room) {
-        this.room = room;
-    }
-
-    public int getParlour() {
-        return parlour;
-    }
-
-    public void setParlour(int parlour) {
-        this.parlour = parlour;
-    }
-
-    public int getBathroom() {
-        return bathroom;
-    }
-
-    public void setBathroom(int bathroom) {
-        this.bathroom = bathroom;
-    }
-
-    public int getFloor() {
-        return floor;
-    }
-
-    public void setFloor(int floor) {
-        this.floor = floor;
-    }
-
-    public int getTotalFloor() {
-        return totalFloor;
-    }
-
-    public void setTotalFloor(int totalFloor) {
-        this.totalFloor = totalFloor;
-    }
-
-    public int getWatchTimes() {
-        return watchTimes;
-    }
-
-    public void setWatchTimes(int watchTimes) {
-        this.watchTimes = watchTimes;
-    }
-
-    public int getBuildYear() {
-        return buildYear;
-    }
-
-    public void setBuildYear(int buildYear) {
-        this.buildYear = buildYear;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getLastUpdateTime() {
-        return lastUpdateTime;
-    }
-
-    public void setLastUpdateTime(Date lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
-    }
-
-    public String getCityEnName() {
-        return cityEnName;
-    }
-
-    public void setCityEnName(String cityEnName) {
-        this.cityEnName = cityEnName;
-    }
-
-    public String getRegionEnName() {
-        return regionEnName;
-    }
-
-    public void setRegionEnName(String regionEnName) {
-        this.regionEnName = regionEnName;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public int getDirection() {
-        return direction;
-    }
-
-    public void setDirection(int direction) {
-        this.direction = direction;
-    }
-
-    public String getCover() {
-        return cover;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
-
-    public int getDistanceToSubway() {
-        return distanceToSubway;
-    }
-
-    public void setDistanceToSubway(int distanceToSubway) {
-        this.distanceToSubway = distanceToSubway;
-    }
 }

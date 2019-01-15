@@ -42,12 +42,24 @@ public class ServiceResult<T> {
         this.result = result;
     }
 
+    public static <T> ServiceResult<T> of(T result) {
+        ServiceResult<T> serviceResult = new ServiceResult<>(true);
+        serviceResult.setResult(result);
+        return serviceResult;
+    }
+
     public static <T> ServiceResult<T> notFound() {
         return new ServiceResult<>(false, Message.NOT_FOUND.getValue());
     }
 
     public enum Message {
+        /**
+         * 找不到数据
+         */
         NOT_FOUND("Not Found Resource!"),
+        /**
+         * 用户未登陆
+         */
         NOT_LOGIN("User not login!");
 
         private String value;
