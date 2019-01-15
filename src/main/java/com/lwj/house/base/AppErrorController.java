@@ -52,8 +52,8 @@ public class AppErrorController implements ErrorController {
             case 500:
                 //  服务异常提示页面
                 return "500";
-                default:
-                    return "index";
+            default:
+                return "index";
         }
     }
 
