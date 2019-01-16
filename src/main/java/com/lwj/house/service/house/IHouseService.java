@@ -41,5 +41,34 @@ public interface IHouseService {
      */
     ServiceResult<HouseDTO> findCompleteOne(Integer id);
 
+    /**
+     * 移除图片
+     * @param id
+     * @return
+     */
+    ServiceResult removePhoto(Integer id);
 
+    /**
+     * 修改封面
+     * @param coverId
+     * @param targetId
+     * @return
+     */
+    ServiceResult updateCover(Integer coverId, Integer targetId);
+
+    /**
+     * 增加标签
+     * @param houseId
+     * @param tag
+     * @return
+     */
+    ServiceResult addTag(Integer houseId, String tag);
+
+    /**
+     * 移除标签
+     * @param houseId
+     * @param tag
+     * @return
+     */
+    ServiceResult removeTag(Integer houseId, String tag);
 }

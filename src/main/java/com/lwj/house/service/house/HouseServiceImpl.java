@@ -11,6 +11,8 @@ import com.lwj.house.web.dto.HouseDetailDTO;
 import com.lwj.house.web.dto.HousePictureDTO;
 import com.lwj.house.web.form.DatatableSearch;
 import com.lwj.house.web.form.HouseForm;
+import com.qiniu.common.QiniuException;
+import com.qiniu.http.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +53,9 @@ public class HouseServiceImpl implements IHouseService {
 
     @Autowired
     private HouseTagRepository houseTagRepository;
+
+    @Autowired
+    private IQiNiuService qiNiuService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -197,6 +202,65 @@ public class HouseServiceImpl implements IHouseService {
         houseDTO.setTags(tagList);
 
         return ServiceResult.of(houseDTO);
+    }
+
+    @Override
+    public ServiceResult removePhoto(Integer id) {
+        HousePicture housePicture = housePictureRepository.findById(id).orElse(null);
+        if (housePicture == null) {
+            return ServiceResult.notFound();
+        }
+        try {
+            Response response = this.qiNiuService.delete(housePicture.getPath());
+            if (response.isOK()) {
+                housePictureRepository.delete(housePicture);
+                return ServiceResult.success();
+            } else {
+                return new ServiceResult(false, response.error);
+            }
+        } catch (QiniuException e) {
+            e.printStackTrace();
+            return new ServiceResult(false, e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ServiceResult updateCover(Integer coverId, Integer targetId) {
+        HousePicture cover = housePictureRepository.findById(coverId).orElse(null);
+        if (cover == null) {
+            return ServiceResult.notFound();
+        }
+        houseRepository.updateCover(targetId, cover.getPath());
+        return ServiceResult.success();
+    }
+
+    @Override
+    public ServiceResult addTag(Integer houseId, String tag) {
+        House house = houseRepository.findById(houseId).orElse(null);
+        if (house == null) {
+            return ServiceResult.notFound();
+        }
+        HouseTag houseTag = houseTagRepository.findByNameAndHouseId(tag, houseId);
+        if (houseTag != null) {
+            return new ServiceResult(false, "标签已存在");
+        }
+        houseTagRepository.save(new HouseTag(houseId, tag));
+        return ServiceResult.success();
+    }
+
+    @Override
+    public ServiceResult removeTag(Integer houseId, String tag) {
+        House house = houseRepository.findById(houseId).orElse(null);
+        if (house == null) {
+            return ServiceResult.notFound();
+        }
+        HouseTag houseTag = houseTagRepository.findByNameAndHouseId(tag, houseId);
+        if (houseTag == null) {
+            return new ServiceResult(false, "标签不存在");
+        }
+        houseTagRepository.delete(houseTag);
+        return ServiceResult.success();
     }
 
     /**

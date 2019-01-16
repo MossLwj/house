@@ -1,5 +1,6 @@
 package com.lwj.house.web.controller.admin;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.lwj.house.base.ApiDatatableResponse;
 import com.lwj.house.base.ApiResponse;
@@ -225,5 +226,82 @@ public class AdminController {
         ApiResponse apiResponse = ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
         apiResponse.setMessage(result.getMessage());
         return apiResponse;
+    }
+
+    /**
+     * 移除图片接口
+     * @param id
+     * @return
+     */
+    @DeleteMapping("admin/house/photo")
+    @ResponseBody
+    public ApiResponse removeHousePhoto(@RequestParam(value = "id") Integer id) {
+        ServiceResult result = this.houseService.removePhoto(id);
+        if (result.isSuccess()) {
+            return ApiResponse.ofStatus(ApiResponse.Status.SUCCESS);
+        } else {
+            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
+        }
+    }
+
+    /**
+     * 修改封面接口
+     * @param coverId
+     * @param targetId
+     * @return
+     */
+    @PostMapping("admin/house/cover")
+    @ResponseBody
+    public ApiResponse updateCover(@RequestParam(value = "cover_id") Integer coverId,
+                                   @RequestParam(value = "target_id") Integer targetId) {
+        ServiceResult result = this.houseService.updateCover(coverId, targetId);
+        if (result.isSuccess()) {
+            return ApiResponse.ofStatus(ApiResponse.Status.SUCCESS);
+        } else {
+            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
+        }
+    }
+
+    /**
+     * 增加标签接口
+     * @param houseId
+     * @param tag
+     * @return
+     */
+    @PostMapping("admin/house/tag")
+    @ResponseBody
+    public ApiResponse addHouseTag(@RequestParam(value = "house_id") Integer houseId, @RequestParam(value = "tag") String tag) {
+        if (houseId < 1 || Strings.isNullOrEmpty(tag)) {
+            return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
+        }
+        ServiceResult result = this.houseService.addTag(houseId, tag);
+        if (result.isSuccess()) {
+            return ApiResponse.ofStatus(ApiResponse.Status.SUCCESS);
+        } else {
+            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
+        }
+    }
+
+    /**
+     * 移除标签接口
+     *
+     * @param houseId
+     * @param tag
+     * @return
+     */
+    @DeleteMapping("admin/house/tag")
+    @ResponseBody
+    public ApiResponse removeHouseTag(@RequestParam(value = "house_id") Integer houseId,
+                                      @RequestParam(value = "tag") String tag) {
+        if (houseId < 1 || Strings.isNullOrEmpty(tag)) {
+            return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
+        }
+
+        ServiceResult result = this.houseService.removeTag(houseId, tag);
+        if (result.isSuccess()) {
+            return ApiResponse.ofStatus(ApiResponse.Status.SUCCESS);
+        } else {
+            return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
+        }
     }
 }
