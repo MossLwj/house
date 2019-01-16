@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.lwj.house.base.ApiDatatableResponse;
 import com.lwj.house.base.ApiResponse;
+import com.lwj.house.base.HouseOperation;
+import com.lwj.house.base.HouseStatus;
 import com.lwj.house.entity.SupportAddress;
 import com.lwj.house.service.ServiceMultiResult;
 import com.lwj.house.service.ServiceResult;
@@ -304,4 +306,41 @@ public class AdminController {
             return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
         }
     }
+
+    /**
+     * 审核接口
+     * @param id
+     * @param operation
+     * @return
+     */
+    @PutMapping("admin/house/operate/{id}/{operation}")
+    @ResponseBody
+    public ApiResponse operateHouse(@PathVariable(value = "id") Integer id,
+                                    @PathVariable(value = "operation") Integer operation) {
+        if (id <= 0) {
+            return ApiResponse.ofStatus(ApiResponse.Status.NOT_VALID_PARAM);
+        }
+        ServiceResult result;
+        switch (operation) {
+            case HouseOperation.PASS:
+                result = this.houseService.updateStatus(id, HouseStatus.PASSES.getValue());
+                break;
+            case HouseOperation.PULL_OUT:
+                result = this.houseService.updateStatus(id, HouseStatus.NOT_AUDITED.getValue());
+                break;
+            case HouseOperation.DELETE:
+                result = this.houseService.updateStatus(id, HouseStatus.DELETED.getValue());
+                break;
+            case HouseOperation.RENT:
+                result = this.houseService.updateStatus(id, HouseStatus.RENTED.getValue());
+                break;
+            default:
+                return ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
+        }
+        if (result.isSuccess()) {
+            return ApiResponse.ofSuccess(null);
+        }
+        return ApiResponse.ofMessage(HttpStatus.BAD_REQUEST.value(), result.getMessage());
+    }
+
 }

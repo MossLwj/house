@@ -146,7 +146,7 @@ public class HouseServiceImpl implements IHouseService {
 
         Specification<House> specification = (Specification<House>) (root, criteriaQuery, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.equal(root.get("adminId"), LoginUserUtil.getLoginUserId());
-            predicate = criteriaBuilder.and(predicate, criteriaBuilder.notEqual(root.get("status"), HouseStatus.DELETE.getValue()));
+            predicate = criteriaBuilder.and(predicate, criteriaBuilder.notEqual(root.get("status"), HouseStatus.DELETED.getValue()));
             //  加入城市信息
             if (datatableSearch.getCity() != null) {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("cityEnName"), datatableSearch.getCity()));
@@ -260,6 +260,26 @@ public class HouseServiceImpl implements IHouseService {
             return new ServiceResult(false, "标签不存在");
         }
         houseTagRepository.delete(houseTag);
+        return ServiceResult.success();
+    }
+
+    @Override
+    @Transactional
+    public ServiceResult updateStatus(Integer id, Integer status) {
+        House house = houseRepository.findById(id).orElse(null);
+        if (house == null) {
+            return ServiceResult.notFound();
+        }
+        if (house.getStatus() == status) {
+            return new ServiceResult(false, "状态未发生变化");
+        }
+        if (house.getStatus() == HouseStatus.RENTED.getValue()) {
+            return new ServiceResult(false, "已出租的房源不允许修改状态");
+        }
+        if (house.getStatus() == HouseStatus.DELETED.getValue()) {
+            return new ServiceResult(false, "已删除的房源不允许操作");
+        }
+        houseRepository.updateStatus(id, status);
         return ServiceResult.success();
     }
 

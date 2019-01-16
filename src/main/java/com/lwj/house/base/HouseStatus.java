@@ -21,7 +21,7 @@ public enum HouseStatus {
     /**
      * 逻辑删除
      */
-    DELETE(3);
+    DELETED(3);
 
     private int value;
 
