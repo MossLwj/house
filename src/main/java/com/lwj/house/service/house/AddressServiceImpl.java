@@ -8,6 +8,7 @@ import com.lwj.house.repository.SubwayStationRepository;
 import com.lwj.house.repository.SupportAddressRepository;
 import com.lwj.house.service.ServiceMultiResult;
 
+import com.lwj.house.service.ServiceResult;
 import com.lwj.house.web.dto.SubwayDTO;
 import com.lwj.house.web.dto.SubwayStationDTO;
 import com.lwj.house.web.dto.SupportAddressDTO;
@@ -94,4 +95,29 @@ public class AddressServiceImpl implements IAddressService {
         result.put(SupportAddress.Level.REGION, modelMapper.map(region, SupportAddressDTO.class));
         return result;
     }
+
+    @Override
+    public ServiceResult<SubwayDTO> findSubway(Integer subwayLineId) {
+        if (subwayLineId == null) {
+            return ServiceResult.notFound();
+        }
+        Subway subway = subwayRepository.findById(subwayLineId).orElse(null);
+        if (subway == null) {
+            return ServiceResult.notFound();
+        }
+        return ServiceResult.of(modelMapper.map(subway, SubwayDTO.class));
+    }
+
+    @Override
+    public ServiceResult<SubwayStationDTO> findSubwayStation(Integer subwayStationId) {
+        if (subwayStationId == null) {
+            return ServiceResult.notFound();
+        }
+        SubwayStation subwayStation = subwayStationRepository.findById(subwayStationId).orElse(null);
+        if (subwayStation == null) {
+            return ServiceResult.notFound();
+        }
+        return ServiceResult.of(modelMapper.map(subwayStation, SubwayStationDTO.class));
+    }
+
 }

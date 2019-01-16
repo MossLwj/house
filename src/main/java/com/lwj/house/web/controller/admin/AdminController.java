@@ -9,9 +9,7 @@ import com.lwj.house.service.ServiceResult;
 import com.lwj.house.service.house.IAddressService;
 import com.lwj.house.service.house.IHouseService;
 import com.lwj.house.service.house.IQiNiuService;
-import com.lwj.house.web.dto.HouseDTO;
-import com.lwj.house.web.dto.QiNiuPutRet;
-import com.lwj.house.web.dto.SupportAddressDTO;
+import com.lwj.house.web.dto.*;
 import com.lwj.house.web.form.DatatableSearch;
 import com.lwj.house.web.form.HouseForm;
 import com.qiniu.common.QiniuException;
@@ -176,7 +174,56 @@ public class AdminController {
         if (id == null || id < 1) {
             return "404";
         }
+
+        ServiceResult<HouseDTO> serviceResult = houseService.findCompleteOne(id);
+        if (!serviceResult.isSuccess()) {
+            return "404";
+        }
+        HouseDTO houseDTO = serviceResult.getResult();
+        model.addAttribute("house", houseDTO);
+
+        Map<SupportAddress.Level, SupportAddressDTO> cityAndRegionMap = addressService.findCityAndRegion(houseDTO.getCityEnName(), houseDTO.getRegionEnName());
+        model.addAttribute("city", cityAndRegionMap.get(SupportAddress.Level.CITY));
+        model.addAttribute("region", cityAndRegionMap.get(SupportAddress.Level.REGION));
+
+        HouseDetailDTO houseDetailDTO = houseDTO.getHouseDetail();
+        ServiceResult<SubwayDTO> subwayDTOServiceResult = addressService.findSubway(houseDetailDTO.getSubwayLineId());
+        if (subwayDTOServiceResult.isSuccess()) {
+            model.addAttribute("subway", subwayDTOServiceResult.getResult());
+        }
+
+        ServiceResult<SubwayStationDTO> subwayStationDTOServiceResult = addressService.findSubwayStation(houseDetailDTO.getSubwayStationId());
+        if (subwayStationDTOServiceResult.isSuccess()) {
+            model.addAttribute("station", subwayStationDTOServiceResult.getResult());
+        }
+
         return "admin/house-edit";
     }
 
+
+    /**
+     * 编辑保存接口
+     * @param houseForm
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("admin/house/edit")
+    @ResponseBody
+    public ApiResponse updateHouse(@Valid @ModelAttribute("form-house-edit") HouseForm houseForm, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ApiResponse(HttpStatus.BAD_REQUEST.value(), bindingResult.getAllErrors().get(0).getDefaultMessage(), null);
+        }
+
+        Map<SupportAddress.Level, SupportAddressDTO> cityAndRegionMap = addressService.findCityAndRegion(houseForm.getCityEnName(), houseForm.getRegionEnName());
+        if (cityAndRegionMap.size() != 2) {
+            return ApiResponse.ofStatus(ApiResponse.Status.NOT_VALID_PARAM);
+        }
+        ServiceResult result = houseService.update(houseForm);
+        if (result.isSuccess()) {
+            return ApiResponse.ofSuccess(null);
+        }
+        ApiResponse apiResponse = ApiResponse.ofStatus(ApiResponse.Status.BAD_REQUEST);
+        apiResponse.setMessage(result.getMessage());
+        return apiResponse;
+    }
 }

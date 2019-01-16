@@ -42,6 +42,10 @@ public class ServiceResult<T> {
         this.result = result;
     }
 
+    public static <T> ServiceResult<T> success() {
+        return new ServiceResult<>(true);
+    }
+
     public static <T> ServiceResult<T> of(T result) {
         ServiceResult<T> serviceResult = new ServiceResult<>(true);
         serviceResult.setResult(result);

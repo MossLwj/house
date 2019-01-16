@@ -19,6 +19,12 @@ public interface IHouseService {
      */
     ServiceResult<HouseDTO> save(HouseForm houseForm);
 
+    /**
+     * 更新房屋信息接口
+     * @param houseForm
+     * @return
+     */
+    ServiceResult<HouseDTO> update(HouseForm houseForm);
 
     /**
      * 管理员房源信息列表查询接口

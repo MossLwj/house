@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql:///xunwu
+    url: jdbc:mysql:///xunwu?characterEncoding=utf-8
     username: root
     password:
     type: com.alibaba.druid.pool.DruidDataSource

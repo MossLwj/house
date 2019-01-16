@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ public class HouseServiceImpl implements IHouseService {
     private String cdnPrefix;
 
     @Override
+    @Transactional
     public ServiceResult<HouseDTO> save(HouseForm houseForm) {
         //  1.开始保存房屋主体信息
         House house = new House();
@@ -94,7 +96,39 @@ public class HouseServiceImpl implements IHouseService {
             houseTagRepository.saveAll(houseTags);
             houseDTO.setTags(tags);
         }
-        return new ServiceResult<HouseDTO>(true, null, houseDTO);
+        return new ServiceResult<>(true, null, houseDTO);
+    }
+
+    @Override
+    @Transactional
+    public ServiceResult<HouseDTO> update(HouseForm houseForm) {
+        House house = this.houseRepository.findById(houseForm.getId()).orElse(null);
+        if (house == null) {
+            return ServiceResult.notFound();
+        }
+
+        HouseDetail houseDetail = this.houseDetailRepository.findByHouseId(houseForm.getId());
+        if (houseDetail == null) {
+            return ServiceResult.notFound();
+        }
+
+        ServiceResult<HouseDTO> wrapperResult = wrapperDetailInfo(houseDetail, houseForm);
+        if (wrapperResult != null) {
+            return wrapperResult;
+        }
+        houseDetailRepository.save(houseDetail);
+
+        List<HousePicture> pictures = generatePictures(houseForm, houseForm.getId());
+        housePictureRepository.saveAll(pictures);
+
+        if (houseForm.getCover() == null) {
+            houseForm.setCover(house.getCover());
+        }
+        modelMapper.map(houseForm, house);
+        house.setLastUpdateTime(new Date());
+        houseRepository.save(house);
+
+        return ServiceResult.success();
     }
 
     @Override
@@ -140,14 +174,29 @@ public class HouseServiceImpl implements IHouseService {
     }
 
     @Override
-    public ServiceResult<HouseDTO> findCompleteOne(Integer id) {
-        House house = houseRepository.findById(id).orElse(null);
+    public ServiceResult<HouseDTO> findCompleteOne(Integer houseId) {
+        House house = houseRepository.findById(houseId).orElse(null);
         if (house == null) {
             return ServiceResult.notFound();
         }
 
-        HouseDetail houseDetail = houseDetailRepository.findById(house.getId()).orElse(null);
-        return null;
+        HouseDetail houseDetail = houseDetailRepository.findByHouseId(houseId);
+        HouseDetailDTO houseDetailDTO = modelMapper.map(houseDetail, HouseDetailDTO.class);
+
+        List<HousePicture> pictures = housePictureRepository.findByHouseId(houseId);
+        List<HousePictureDTO> pictureDTOS = new ArrayList<>();
+        pictures.forEach(housePicture -> pictureDTOS.add(modelMapper.map(housePicture, HousePictureDTO.class)));
+
+        List<HouseTag> tags = houseTagRepository.findAllByHouseId(houseId);
+        List<String> tagList = new ArrayList<>();
+        tags.forEach(houseTag -> tagList.add(houseTag.getName()));
+
+        HouseDTO houseDTO = modelMapper.map(house, HouseDTO.class);
+        houseDTO.setHouseDetail(houseDetailDTO);
+        houseDTO.setPictures(pictureDTOS);
+        houseDTO.setTags(tagList);
+
+        return ServiceResult.of(houseDTO);
     }
 
     /**

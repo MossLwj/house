@@ -3,6 +3,7 @@ package com.lwj.house.service.house;
 
 import com.lwj.house.entity.SupportAddress;
 import com.lwj.house.service.ServiceMultiResult;
+import com.lwj.house.service.ServiceResult;
 import com.lwj.house.web.dto.SubwayDTO;
 import com.lwj.house.web.dto.SubwayStationDTO;
 import com.lwj.house.web.dto.SupportAddressDTO;
@@ -50,4 +51,18 @@ public interface IAddressService {
      * @return
      */
     Map<SupportAddress.Level, SupportAddressDTO> findCityAndRegion(String cityEnName, String regionEnName);
+
+    /**
+     * 通过地铁线查询
+     * @param subwayLineId
+     * @return
+     */
+    ServiceResult<SubwayDTO> findSubway(Integer subwayLineId);
+
+    /**
+     * 根据id获取地铁站名
+     * @param subwayStationId
+     * @return
+     */
+    ServiceResult<SubwayStationDTO> findSubwayStation(Integer subwayStationId);
 }
