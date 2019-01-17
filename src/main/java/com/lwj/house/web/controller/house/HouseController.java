@@ -3,16 +3,20 @@ package com.lwj.house.web.controller.house;
 import com.lwj.house.base.ApiResponse;
 import com.lwj.house.service.ServiceMultiResult;
 import com.lwj.house.service.house.IAddressService;
+import com.lwj.house.service.house.IHouseService;
+import com.lwj.house.web.dto.HouseDTO;
 import com.lwj.house.web.dto.SubwayDTO;
 import com.lwj.house.web.dto.SubwayStationDTO;
 import com.lwj.house.web.dto.SupportAddressDTO;
+import com.lwj.house.web.form.RentSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,6 +27,9 @@ public class HouseController {
 
     @Autowired
     private IAddressService addressService;
+
+    @Autowired
+    private IHouseService houseService;
 
     /**
      * 获取城市信息
@@ -84,6 +91,44 @@ public class HouseController {
         }
 
         return ApiResponse.ofSuccess(stationDTOS);
+    }
+
+    /**
+     * 租房信息接口
+     * @param rentSearch
+     * @param model
+     * @param httpSession
+     * @param redirectAttributes
+     * @return
+     */
+    @GetMapping("rent/house")
+    public String rentHousePage(@ModelAttribute RentSearch rentSearch, Model model,
+                                HttpSession httpSession, RedirectAttributes redirectAttributes) {
+        if (rentSearch.getCityEnName() == null) {
+            String cityEnNameInSession = (String) httpSession.getAttribute("cityEnName");
+            if (cityEnNameInSession == null) {
+                redirectAttributes.addAttribute("msg", "must_chose_city");
+                return "redirect:/index";
+            } else {
+                rentSearch.setCityEnName(cityEnNameInSession);
+            }
+        } else {
+            httpSession.setAttribute("cityEnName", rentSearch.getCityEnName());
+        }
+        //  校验选择的城市是否是正确的
+        ServiceMultiResult<SupportAddressDTO> allRegionsByCityName = addressService.findAllRegionsByCityName(rentSearch.getCityEnName());
+        if (allRegionsByCityName.getResult() == null || allRegionsByCityName.getTotal() < 1) {
+            redirectAttributes.addAttribute("msg", "must_chose_city");
+            return "redirect:/index";
+        }
+        ServiceMultiResult<HouseDTO> serviceMultiResult = houseService.query(rentSearch);
+
+        model.addAttribute("total", serviceMultiResult.getTotal());
+        model.addAttribute("houses", new ArrayList<>());
+        model.addAttribute("searchBody", rentSearch);
+        model.addAttribute("regions", allRegionsByCityName.getResult());
+
+        return "rent-list";
     }
 
 }

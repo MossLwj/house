@@ -5,6 +5,7 @@ import com.lwj.house.service.ServiceResult;
 import com.lwj.house.web.dto.HouseDTO;
 import com.lwj.house.web.form.DatatableSearch;
 import com.lwj.house.web.form.HouseForm;
+import com.lwj.house.web.form.RentSearch;
 
 /**
  * 房屋管理服务接口
@@ -80,4 +81,11 @@ public interface IHouseService {
      * @return
      */
     ServiceResult updateStatus(Integer id, Integer status);
+
+    /**
+     * 查询房源信息集
+     * @param rentSearch
+     * @return
+     */
+    ServiceMultiResult<HouseDTO> query(RentSearch rentSearch);
 }

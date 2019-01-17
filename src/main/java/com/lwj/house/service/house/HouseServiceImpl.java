@@ -11,6 +11,7 @@ import com.lwj.house.web.dto.HouseDetailDTO;
 import com.lwj.house.web.dto.HousePictureDTO;
 import com.lwj.house.web.form.DatatableSearch;
 import com.lwj.house.web.form.HouseForm;
+import com.lwj.house.web.form.RentSearch;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import org.modelmapper.ModelMapper;
@@ -281,6 +282,11 @@ public class HouseServiceImpl implements IHouseService {
         }
         houseRepository.updateStatus(id, status);
         return ServiceResult.success();
+    }
+
+    @Override
+    public ServiceMultiResult<HouseDTO> query(RentSearch rentSearch) {
+        return null;
     }
 
     /**
