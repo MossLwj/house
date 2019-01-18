@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress ALL-->
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -80,7 +81,7 @@
                                onclick="changeSimpleCondition('regionEnName', '*')">不限</a>
                             <tr th:each="region, regionStat: ${regions}">
                                 <a th:attr="data-bind=${region.enName}" href="javascript:void(0);"
-                                   th:onclick="'changeSimpleCondition(\'regionEnName\', \'' + ${region.enName} + '\')'"
+                                   th:onclick="changeSimpleCondition('regionEnName',[[${region.enName}]])"
                                    th:text="${region.cnName}"></a>
                             </tr>
                         </div>
@@ -95,7 +96,7 @@
                             </a>
                             <tr th:each="priceBlock : ${priceBlocks}">
                                 <a th:attr="data-bind=${priceBlock.key}" href="javascript:void(0);"
-                                   th:onclick="'changeSimpleCondition(\'priceBlock\',\'' + ${priceBlock.key} + '\')'"
+                                   th:onclick="changeSimpleCondition('priceBlock',[[${priceBlock.key}]])"
                                    th:text="${priceBlock.value.min < 0} ? (${priceBlock.value.max} + '元以下' ):
                                     (${priceBlock.value.max < 0} ? ${priceBlock.value.min} + '元以上' :
                                      ${priceBlock.value.min} + '-' + ${priceBlock.value.max} + '元')">
@@ -113,7 +114,7 @@
                             </a>
                             <tr th:each="areaBlock : ${areaBlocks}">
                                 <a th:attr="data-bind=${areaBlock.key}" href="javascript:void(0);"
-                                   th:onclick="'changeSimpleCondition(\'areaBlock\',\'' + ${areaBlock.key} + '\')'"
+                                   th:onclick="changeSimpleCondition('areaBlock',[[${areaBlock.key}]])"
                                    th:text="${areaBlock.value.min < 0} ? (${areaBlock.value.max} + '平以下' ):
                                     (${areaBlock.value.max < 0} ? ${areaBlock.value.min} + '平以上' :
                                      ${areaBlock.value.min} + '-' + ${areaBlock.value.max} + '平')">

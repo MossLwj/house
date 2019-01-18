@@ -1,7 +1,9 @@
 package com.lwj.house.web.controller.house;
 
 import com.lwj.house.base.ApiResponse;
+import com.lwj.house.base.RentValueBlock;
 import com.lwj.house.service.ServiceMultiResult;
+import com.lwj.house.service.ServiceResult;
 import com.lwj.house.service.house.IAddressService;
 import com.lwj.house.service.house.IHouseService;
 import com.lwj.house.web.dto.HouseDTO;
@@ -115,6 +117,14 @@ public class HouseController {
         } else {
             httpSession.setAttribute("cityEnName", rentSearch.getCityEnName());
         }
+
+        ServiceResult<SupportAddressDTO> city = addressService.findCity(rentSearch.getCityEnName());
+        if (!city.isSuccess()) {
+            redirectAttributes.addAttribute("msg", "must_chose_city");
+            return "redirect:/index";
+        }
+        model.addAttribute("currentCity", city.getResult());
+
         //  校验选择的城市是否是正确的
         ServiceMultiResult<SupportAddressDTO> allRegionsByCityName = addressService.findAllRegionsByCityName(rentSearch.getCityEnName());
         if (allRegionsByCityName.getResult() == null || allRegionsByCityName.getTotal() < 1) {
@@ -124,9 +134,19 @@ public class HouseController {
         ServiceMultiResult<HouseDTO> serviceMultiResult = houseService.query(rentSearch);
 
         model.addAttribute("total", serviceMultiResult.getTotal());
-        model.addAttribute("houses", new ArrayList<>());
+        model.addAttribute("houses", serviceMultiResult.getResult());
+        //  如果区域为null则默认为全部都选中
+        if (rentSearch.getRegionEnName() == null) {
+            rentSearch.setRegionEnName("*");
+        }
+
         model.addAttribute("searchBody", rentSearch);
         model.addAttribute("regions", allRegionsByCityName.getResult());
+        model.addAttribute("priceBlocks", RentValueBlock.PRICE_BLOCK);
+        model.addAttribute("areaBlocks", RentValueBlock.AREA_BLOCK);
+
+        model.addAttribute("currentPriceBlock", RentValueBlock.matchPrice(rentSearch.getPriceBlock()));
+        model.addAttribute("currentAreaBlock", RentValueBlock.matchArea(rentSearch.getAreaBlock()));
 
         return "rent-list";
     }
