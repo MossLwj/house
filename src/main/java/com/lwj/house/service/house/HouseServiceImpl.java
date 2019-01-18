@@ -1,5 +1,6 @@
 package com.lwj.house.service.house;
 
+import com.lwj.house.base.HouseSort;
 import com.lwj.house.base.HouseStatus;
 import com.lwj.house.base.LoginUserUtil;
 import com.lwj.house.entity.*;
@@ -26,9 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Predicate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 房屋管理服务实现类
@@ -286,7 +285,7 @@ public class HouseServiceImpl implements IHouseService {
 
     @Override
     public ServiceMultiResult<HouseDTO> query(RentSearch rentSearch) {
-        Sort sort = new Sort(Sort.Direction.DESC, "lastUpdateTime");
+        Sort sort = HouseSort.generateSort(rentSearch.getOrderBy(), rentSearch.getOrderDirection());
         int page = rentSearch.getStart() / rentSearch.getSize();
         Pageable pageable = PageRequest.of(page, rentSearch.getSize(), sort);
         Specification<House> specification = ((root, criteriaQuery, criteriaBuilder) -> {
@@ -296,14 +295,30 @@ public class HouseServiceImpl implements IHouseService {
         });
         Page<House> houses = houseRepository.findAll(specification, pageable);
         List<HouseDTO> houseDTOS = new ArrayList<>();
+        List<Integer> houseIds = new ArrayList<>();
+        Map<Integer, HouseDTO> idToHouseMap = new HashMap<>();
         houses.forEach(house -> {
             HouseDTO houseDTO = modelMapper.map(house, HouseDTO.class);
             houseDTO.setCover(house.getCover());
-            HouseDetail houseDetail = houseDetailRepository.findByHouseId(house.getId());
-            houseDTO.setHouseDetail(modelMapper.map(houseDetail, HouseDetailDTO.class));
             houseDTOS.add(houseDTO);
+
+            houseIds.add(house.getId());
+            idToHouseMap.put(house.getId(), houseDTO);
+
         });
         return new ServiceMultiResult<>(houses.getTotalElements(), houseDTOS);
+    }
+
+    /**
+     * 渲染详细信息 及 标签
+     * @param houseIds
+     * @param idToHouseMap
+     */
+    private void wrapperHouseList(List<Integer> houseIds,Map<Integer, HouseDTO> idToHouseMap) {
+        List<HouseDetail> houseDetails = houseDetailRepository.findByHouseIdIn(houseIds);
+        houseDetails.forEach(houseDetail -> {
+
+        });
     }
 
     /**

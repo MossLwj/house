@@ -4,7 +4,7 @@ import com.lwj.house.entity.HouseDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @author lwj
@@ -18,4 +18,6 @@ public interface HouseDetailRepository extends JpaRepository<HouseDetail, Intege
      * @return
      */
     HouseDetail findByHouseId(Integer id);
+
+    List<HouseDetail> findByHouseIdIn(List<Integer> houseIds);
 }
