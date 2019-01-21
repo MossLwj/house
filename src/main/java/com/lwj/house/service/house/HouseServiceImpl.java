@@ -291,10 +291,14 @@ public class HouseServiceImpl implements IHouseService {
         Specification<House> specification = ((root, criteriaQuery, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.equal(root.get("status"), HouseStatus.PASSES.getValue());
             predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("cityEnName"), rentSearch.getCityEnName()));
+            if (HouseSort.DISTANCE_TO_SUBWAY_KEY.equals(rentSearch.getOrderBy())) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.gt(root.get(HouseSort.DISTANCE_TO_SUBWAY_KEY), -1));
+            }
             return predicate;
         });
         Page<House> houses = houseRepository.findAll(specification, pageable);
         List<HouseDTO> houseDTOS = new ArrayList<>();
+
         List<Integer> houseIds = new ArrayList<>();
         Map<Integer, HouseDTO> idToHouseMap = new HashMap<>();
         houses.forEach(house -> {
@@ -306,18 +310,26 @@ public class HouseServiceImpl implements IHouseService {
             idToHouseMap.put(house.getId(), houseDTO);
 
         });
+        wrapperHouseList(houseIds, idToHouseMap);
         return new ServiceMultiResult<>(houses.getTotalElements(), houseDTOS);
     }
 
     /**
      * 渲染详细信息 及 标签
+     *
      * @param houseIds
      * @param idToHouseMap
      */
-    private void wrapperHouseList(List<Integer> houseIds,Map<Integer, HouseDTO> idToHouseMap) {
+    private void wrapperHouseList(List<Integer> houseIds, Map<Integer, HouseDTO> idToHouseMap) {
         List<HouseDetail> houseDetails = houseDetailRepository.findByHouseIdIn(houseIds);
         houseDetails.forEach(houseDetail -> {
-
+            HouseDTO houseDTO = idToHouseMap.get(houseDetail.getHouseId());
+            houseDTO.setHouseDetail(modelMapper.map(houseDetail, HouseDetailDTO.class));
+        });
+        List<HouseTag> houseTags = houseTagRepository.findAllByHouseIdIn(houseIds);
+        houseTags.forEach(houseTag -> {
+            HouseDTO houseDTO = idToHouseMap.get(houseTag.getHouseId());
+            houseDTO.getTags().add(houseTag.getName());
         });
     }
 

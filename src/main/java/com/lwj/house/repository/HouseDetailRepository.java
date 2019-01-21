@@ -19,5 +19,10 @@ public interface HouseDetailRepository extends JpaRepository<HouseDetail, Intege
      */
     HouseDetail findByHouseId(Integer id);
 
+    /**
+     * 通过ids获取房源详细信息
+     * @param houseIds
+     * @return
+     */
     List<HouseDetail> findByHouseIdIn(List<Integer> houseIds);
 }
