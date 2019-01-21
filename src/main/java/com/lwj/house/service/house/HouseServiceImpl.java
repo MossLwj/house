@@ -303,7 +303,7 @@ public class HouseServiceImpl implements IHouseService {
         Map<Integer, HouseDTO> idToHouseMap = new HashMap<>();
         houses.forEach(house -> {
             HouseDTO houseDTO = modelMapper.map(house, HouseDTO.class);
-            houseDTO.setCover(house.getCover());
+            houseDTO.setCover(cdnPrefix + house.getCover());
             houseDTOS.add(houseDTO);
 
             houseIds.add(house.getId());

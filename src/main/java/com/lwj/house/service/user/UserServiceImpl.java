@@ -4,6 +4,9 @@ import com.lwj.house.entity.Role;
 import com.lwj.house.entity.User;
 import com.lwj.house.repository.RoleRepository;
 import com.lwj.house.repository.UserRepository;
+import com.lwj.house.service.ServiceResult;
+import com.lwj.house.web.dto.UserDTO;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,6 +28,8 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public User findUserByName(String userName) {
@@ -41,6 +46,15 @@ public class UserServiceImpl implements IUserService {
         user.setAuthorityList(authorities);
 
         return user;
+    }
+
+    @Override
+    public ServiceResult<UserDTO> findById(Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            return ServiceResult.notFound();
+        }
+        return ServiceResult.of(modelMapper.map(user, UserDTO.class));
     }
 
 }

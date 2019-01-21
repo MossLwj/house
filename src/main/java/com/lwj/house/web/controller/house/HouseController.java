@@ -2,14 +2,13 @@ package com.lwj.house.web.controller.house;
 
 import com.lwj.house.base.ApiResponse;
 import com.lwj.house.base.RentValueBlock;
+import com.lwj.house.entity.SupportAddress;
 import com.lwj.house.service.ServiceMultiResult;
 import com.lwj.house.service.ServiceResult;
 import com.lwj.house.service.house.IAddressService;
 import com.lwj.house.service.house.IHouseService;
-import com.lwj.house.web.dto.HouseDTO;
-import com.lwj.house.web.dto.SubwayDTO;
-import com.lwj.house.web.dto.SubwayStationDTO;
-import com.lwj.house.web.dto.SupportAddressDTO;
+import com.lwj.house.service.user.IUserService;
+import com.lwj.house.web.dto.*;
 import com.lwj.house.web.form.RentSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lwj
@@ -32,6 +32,9 @@ public class HouseController {
 
     @Autowired
     private IHouseService houseService;
+
+    @Autowired
+    private IUserService userService;
 
     /**
      * 获取城市信息
@@ -149,6 +152,30 @@ public class HouseController {
         model.addAttribute("currentAreaBlock", RentValueBlock.matchArea(rentSearch.getAreaBlock()));
 
         return "rent-list";
+    }
+
+    @GetMapping("rent/house/show/{id}")
+    public String show(@PathVariable(value = "id") Integer houseId, Model model) {
+        if (houseId <= 0) {
+            return "404";
+        }
+        ServiceResult<HouseDTO> serviceResult = houseService.findCompleteOne(houseId);
+        if (!serviceResult.isSuccess()) {
+            return "404";
+        }
+        HouseDTO houseDTO = serviceResult.getResult();
+        Map<SupportAddress.Level, SupportAddressDTO> cityAndRegionMap = addressService.findCityAndRegion(houseDTO.getCityEnName(), houseDTO.getRegionEnName());
+        SupportAddressDTO city = cityAndRegionMap.get(SupportAddress.Level.CITY);
+        model.addAttribute("city", city);
+        SupportAddressDTO region = cityAndRegionMap.get(SupportAddress.Level.REGION);
+        model.addAttribute("region", region);
+
+        ServiceResult<UserDTO> agentResult = userService.findById(houseDTO.getAdminId());
+        model.addAttribute("house", houseDTO);
+        model.addAttribute("agent", agentResult.getResult());
+
+        model.addAttribute("houseCountInDistrict", 0);
+        return "house-detail";
     }
 
 }
