@@ -95,7 +95,7 @@ public class HouseServiceImpl implements IHouseService {
         houseDTO.setCover(this.cdnPrefix + houseDTO.getCover());
         //      保存房屋标签信息
         List<String> tags = houseForm.getTags();
-        if (tags != null || !tags.isEmpty()) {
+        if (null != tags && !tags.isEmpty()) {
             List<HouseTag> houseTags = new ArrayList<>();
             tags.forEach(tag-> houseTags.add(new HouseTag(house.getId(), tag)));
             houseTagRepository.saveAll(houseTags);
