@@ -18,6 +18,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
+
+        <!-- 使用自定义ES 版本 -->
+        <elasticsearch.version>5.6.1</elasticsearch.version>
+
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
         <!-- 布局功能的支持程序  thymeleaf3主程序  layout2以上版本 -->
         <!-- thymeleaf2   layout1-->
@@ -49,6 +53,12 @@
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-redis</artifactId>
             <version>2.1.1.RELEASE</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId></groupId>
+            <artifactId></artifactId>
         </dependency>
 
         <dependency>
@@ -114,6 +124,13 @@
             <groupId>com.qiniu</groupId>
             <artifactId>qiniu-java-sdk</artifactId>
             <version>[7.2.0, 7.2.99]</version>
+        </dependency>
+
+        <!-- ES -->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>${elasticsearch.version}</version>
         </dependency>
 
         <dependency>
