@@ -3,8 +3,14 @@ package com.lwj.house.service.search;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lwj.house.entity.House;
+import com.lwj.house.entity.HouseDetail;
+import com.lwj.house.entity.HouseTag;
+import com.lwj.house.repository.HouseDetailRepository;
 import com.lwj.house.repository.HouseRepository;
+import com.lwj.house.repository.HouseTagRepository;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -17,6 +23,9 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -33,6 +42,12 @@ public class SearchServiceImpl implements ISearchService{
     private HouseRepository houseRepository;
 
     @Autowired
+    private HouseDetailRepository houseDetailRepository;
+
+    @Autowired
+    private HouseTagRepository houseTagRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
@@ -42,7 +57,7 @@ public class SearchServiceImpl implements ISearchService{
     private ObjectMapper objectMapper;
 
     @Override
-    public void index(Integer houseId) {
+    public boolean index(Integer houseId) {
         House house = houseRepository.findById(houseId).orElse(null);
         if (house == null) {
             logger.error("Index house {} dose not exist!", houseId);
@@ -50,12 +65,43 @@ public class SearchServiceImpl implements ISearchService{
 
         HouseIndexTemplate indexTemplate = new HouseIndexTemplate();
         modelMapper.map(house, indexTemplate);
-        //  create
 
-        //  update
+        HouseDetail houseDetail = houseDetailRepository.findByHouseId(houseId);
+        if (houseDetail == null) {
+            //TODO 异常情况
+        }
+        modelMapper.map(houseDetail, indexTemplate);
 
-        //  delete & create
+        List<HouseTag> tages = houseTagRepository.findAllByHouseId(houseId);
+        if (tages != null && !tages.isEmpty()) {
+            List<String> tagStrings = new ArrayList<>();
+            tages.forEach(houseTag -> {
+                tagStrings.add(houseTag.getName());
+            });
+            indexTemplate.setTags(tagStrings);
+        }
+        //  校验在ES中是否已存在该数据
+        SearchRequestBuilder searchRequestBuilder = this.esClient.prepareSearch(INDEX_NAME).setTypes(INDEX_TYPE)
+                .setQuery(QueryBuilders.termQuery(HouseIndexKey.HOUSE_ID, houseId));
+        logger.debug(searchRequestBuilder.toString());
+        SearchResponse searchResponse = searchRequestBuilder.get();
 
+        boolean success;
+        long totalHit = searchResponse.getHits().getTotalHits();
+        if (totalHit == 0) {
+            success = create(indexTemplate);
+        } else if (totalHit == 1) {
+            // 此处因为仅有一个索引，所以可以写0
+            String esId = searchResponse.getHits().getAt(0).getId();
+            success = update(esId, indexTemplate);
+        } else {
+            //  当如果命中量大于一个的时候说明有重复数据，则需要先删除数据，再创建
+            success = deleteAndCreate(totalHit, indexTemplate);
+        }
+        if (success) {
+            logger.debug("Index success with house " + houseId);
+        }
+        return success;
     }
 
     /**
@@ -89,7 +135,7 @@ public class SearchServiceImpl implements ISearchService{
         try {
             UpdateResponse response = this.esClient.prepareUpdate(INDEX_NAME, INDEX_TYPE, esId)
                     .setDoc(objectMapper.writeValueAsBytes(houseIndexTemplate), XContentType.JSON).get();
-            logger.debug("Create index with house: " + houseIndexTemplate.getHouseId());
+            logger.debug("Update index with house: " + houseIndexTemplate.getHouseId());
             if (response.status() == RestStatus.OK) {
                 return true;
             } else {
@@ -107,7 +153,7 @@ public class SearchServiceImpl implements ISearchService{
      * @param houseIndexTemplate
      * @return
      */
-    private boolean deleteAndCreate(int totalHit,HouseIndexTemplate houseIndexTemplate) {
+    private boolean deleteAndCreate(long totalHit,HouseIndexTemplate houseIndexTemplate) {
         DeleteByQueryRequestBuilder builder = DeleteByQueryAction.INSTANCE.newRequestBuilder(esClient)
                 .filter(QueryBuilders.termQuery(HouseIndexKey.HOUSE_ID, houseIndexTemplate.getHouseId())).source(INDEX_NAME);
 
@@ -124,6 +170,13 @@ public class SearchServiceImpl implements ISearchService{
 
     @Override
     public void remove(Integer houseId) {
+        DeleteByQueryRequestBuilder builder = DeleteByQueryAction.INSTANCE.newRequestBuilder(esClient)
+                .filter(QueryBuilders.termQuery(HouseIndexKey.HOUSE_ID, houseId)).source(INDEX_NAME);
 
+        logger.debug("Delete by query for house: " + builder);
+
+        BulkByScrollResponse response = builder.get();
+        long deleted = response.getDeleted();
+        logger.debug("Delete total " + deleted);
     }
 }

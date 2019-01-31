@@ -6,11 +6,13 @@ package com.lwj.house.service.search;
  */
 public interface ISearchService {
 
+
     /**
      * 所引目标房源
      * @param houseId
+     * @return
      */
-    void index(Integer houseId);
+    boolean index(Integer houseId);
 
     /**
      * 移除房源索引
