@@ -7,6 +7,7 @@ import com.lwj.house.entity.*;
 import com.lwj.house.repository.*;
 import com.lwj.house.service.ServiceMultiResult;
 import com.lwj.house.service.ServiceResult;
+import com.lwj.house.service.search.ISearchService;
 import com.lwj.house.web.dto.HouseDTO;
 import com.lwj.house.web.dto.HouseDetailDTO;
 import com.lwj.house.web.dto.HousePictureDTO;
@@ -56,6 +57,9 @@ public class HouseServiceImpl implements IHouseService {
 
     @Autowired
     private IQiNiuService qiNiuService;
+
+    @Autowired
+    private ISearchService searchService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -132,6 +136,10 @@ public class HouseServiceImpl implements IHouseService {
         modelMapper.map(houseForm, house);
         house.setLastUpdateTime(new Date());
         houseRepository.save(house);
+
+        if (house.getStatus() == HouseStatus.PASSES.getValue()) {
+            searchService.index(house.getId());
+        }
 
         return ServiceResult.success();
     }
@@ -280,6 +288,13 @@ public class HouseServiceImpl implements IHouseService {
             return new ServiceResult(false, "已删除的房源不允许操作");
         }
         houseRepository.updateStatus(id, status);
+
+        //  上架的时候更新索引，其他情况都要删除索引
+        if (status == HouseStatus.PASSES.getValue()) {
+            searchService.index(id);
+        } else {
+            searchService.remove(id);
+        }
         return ServiceResult.success();
     }
 
