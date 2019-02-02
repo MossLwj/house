@@ -64,12 +64,16 @@ spring:
 #    session会话存储类型
   session:
     store-type: redis
+#   kafka
+  kafka:
+    bootstrap-servers: :9082
+    consumer:
+      group-id: xunwu
 
 #   qiniu
 qiniu:
   AccessKey:
   SecretKey:
   Bucket: lwj-space
-  path:
   cdn:
-    prefix:
+    prefix: http://pkqoq7633.bkt.clouddn.com/

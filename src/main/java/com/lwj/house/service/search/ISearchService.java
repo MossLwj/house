@@ -12,7 +12,7 @@ public interface ISearchService {
      * @param houseId
      * @return
      */
-    boolean index(Integer houseId);
+    void index(Integer houseId);
 
     /**
      * 移除房源索引
