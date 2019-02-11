@@ -8,7 +8,7 @@ public interface ISearchService {
 
 
     /**
-     * 所引目标房源
+     * 索引目标房源
      * @param houseId
      * @return
      */

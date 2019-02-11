@@ -105,10 +105,10 @@ public class SearchServiceImpl implements ISearchService {
         }
         modelMapper.map(houseDetail, indexTemplate);
 
-        List<HouseTag> tages = houseTagRepository.findAllByHouseId(houseId);
-        if (tages != null && !tages.isEmpty()) {
+        List<HouseTag> tags = houseTagRepository.findAllByHouseId(houseId);
+        if (tags != null && !tags.isEmpty()) {
             List<String> tagStrings = new ArrayList<>();
-            tages.forEach(houseTag -> {
+            tags.forEach(houseTag -> {
                 tagStrings.add(houseTag.getName());
             });
             indexTemplate.setTags(tagStrings);
